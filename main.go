@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	docmanager "gateway/pkg/doc_manager"
+	"gateway/pkg/docmanager"
 	"gateway/pkg/view"
 
 	"fyne.io/fyne/v2"

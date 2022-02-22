@@ -7,7 +7,9 @@ import (
 )
 
 var Essenx Essen
-var ListName = []string{}
+
+// var ListName = []string{}
+var Path_Map = map[string]*Essen{"": &Essenx}
 
 type Essen struct {
 	Name     string  `json:"name"`
@@ -23,15 +25,21 @@ func (e *Essen) createView() {
 		value.createView()
 	}
 }
-func (e *Essen) GetListName() {
-	fmt.Println("createView")
-	ListName = append(ListName, e.Name)
-	fmt.Println(e.Name)
-	fmt.Println(e.Note)
+func (e *Essen) InitPath() {
+	Path_Map[e.Name] = e
 	for _, value := range e.Children {
-		value.GetListName()
+		value.InitPath()
 	}
-
+}
+func (e *Essen) GetChildrenListName() []string {
+	children_list := []string{}
+	if e.Children == nil {
+		return children_list
+	}
+	for _, value := range e.Children {
+		children_list = append(children_list, value.Name)
+	}
+	return children_list
 }
 
 func ReadDoc(docname string) {
@@ -46,21 +54,10 @@ func ReadDoc(docname string) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	Essenx.InitPath()
 	Essenx.createView()
 }
 func WriteDoc(docname string) {
-	Essenx = Essen{
-		Name: "first",
-		Note: "first note 123225",
-		Children: []Essen{
-			{
-				Name:     "second",
-				Note:     "second note 123225",
-				Children: []Essen{},
-			},
-		},
-	}
-
 	file, err := os.OpenFile(docname, os.O_CREATE|os.O_WRONLY|os.O_APPEND|os.O_TRUNC, 0640)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -68,10 +65,12 @@ func WriteDoc(docname string) {
 	defer file.Close()
 
 	encoder := json.NewEncoder(file)
+
 	err = encoder.Encode(&Essenx)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	Essenx.InitPath()
 	Essenx.createView()
 
 }
