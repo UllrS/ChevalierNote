@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"gateway/models"
 	"gateway/pkg/control"
 	"gateway/pkg/view"
-	"os"
 
 	"fyne.io/fyne/v2"
 )
@@ -20,10 +20,9 @@ var list_panel *fyne.Container
 
 func main() {
 	models.FileName = ""
-	if len(os.Args) > 1 {
-		models.FileName = os.Args[1]
-		control.DataLoad()
+	if control.CheckARGS() {
+		fmt.Println("OPEN FILE ARGS")
 	}
-	models.TreeItemMap = map[string]*models.TreeItem{}
+	models.Init()
 	view.MainWindowInit()
 }

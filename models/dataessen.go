@@ -6,7 +6,7 @@ var FileName string
 var Essenx Essen
 var TargetEssens string
 
-var Path_Map = map[string]*Essen{"": &Essenx}
+var Path_Map map[string]*Essen
 
 type Essen struct {
 	Name     string   `json:"name"`

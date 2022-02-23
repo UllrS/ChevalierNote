@@ -12,7 +12,7 @@ var List_panel *fyne.Container
 var TreeView *widget.Tree
 var BottomLabel *widget.Label
 
-var TreeItemMap map[string]*TreeItem
+var TreeItemMap map[string]*widget.Label
 
 type TreeItem struct {
 	Lbl *widget.Label
