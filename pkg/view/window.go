@@ -1,6 +1,8 @@
 package view
 
 import (
+	"gateway/models"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -11,16 +13,21 @@ func MainWindowInit() {
 
 	icon, _ := fyne.LoadResourceFromPath("assets/image/knight.png")
 	a := app.New()
-	w := a.NewWindow("Note")
-	w.SetIcon(icon)
-	w.Resize(fyne.NewSize(680, 420))
+	models.AppWindow = a.NewWindow("Note")
+	// models.AppWin = models.AppWindow{&a}
+	models.AppWindow.SetIcon(icon)
+	models.AppWindow.Resize(fyne.NewSize(680, 420))
 
 	d := widget.NewSeparator()
 	control_panel := ControlPanelCreate()
+	subControlPanel := container.NewHBox()
+	top_panel := container.NewVBox(control_panel, subControlPanel)
 	body_panel := BodyCreate()
-	main_lay := container.NewBorder(control_panel, nil, nil, nil, d, body_panel) //(widjets.ControlButton("1"), nil, nil, nil)
+	models.BottomLabel = widget.NewLabel("")
 
-	w.SetContent(main_lay)
+	main_lay := container.NewBorder(top_panel, models.BottomLabel, nil, nil, d, body_panel) //(widjets.ControlButton("1"), nil, nil, nil)
 
-	w.ShowAndRun()
+	models.AppWindow.SetContent(main_lay)
+
+	models.AppWindow.ShowAndRun()
 }

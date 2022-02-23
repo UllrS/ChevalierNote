@@ -1,5 +1,7 @@
 package models
 
+import "fmt"
+
 var FileName string
 var Essenx Essen
 var TargetEssens string
@@ -27,10 +29,11 @@ func (e *Essen) Rename(name string) {
 func (e *Essen) Delete(name string) {
 
 }
-func (e *Essen) InitPath() {
+func (e *Essen) InitPath(path string) {
 	Path_Map[e.Name] = e
+	e.Path = fmt.Sprint(path, "/", e.Name)
 	for _, value := range e.Children {
-		value.InitPath()
+		value.InitPath(e.Path)
 	}
 }
 func (e *Essen) ChengeNote(note string) {

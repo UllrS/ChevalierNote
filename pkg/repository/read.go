@@ -21,7 +21,7 @@ func LoadFile(docname string) {
 	}
 	fmt.Println(models.Essenx)
 	fmt.Println(models.Essenx.GetChildrenListName())
-	models.Essenx.InitPath()
+	models.Essenx.InitPath("")
 }
 func SaveFile(docname string) {
 	file, err := os.OpenFile(docname, os.O_CREATE|os.O_WRONLY|os.O_APPEND|os.O_TRUNC, 0640)
@@ -37,6 +37,6 @@ func SaveFile(docname string) {
 		fmt.Println(err.Error())
 	}
 	fmt.Println(models.Essenx)
-	models.Essenx.InitPath()
+	models.Essenx.InitPath("")
 
 }

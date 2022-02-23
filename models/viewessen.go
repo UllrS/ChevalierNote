@@ -5,7 +5,16 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+var AppWindow fyne.Window
+
 var Area *widget.Entry
 var List_panel *fyne.Container
 var TreeView *widget.Tree
-var NameEntry *widget.Entry
+var BottomLabel *widget.Label
+
+var TreeItemMap map[string]*TreeItem
+
+type TreeItem struct {
+	Lbl *widget.Label
+	Btn *widget.Button
+}

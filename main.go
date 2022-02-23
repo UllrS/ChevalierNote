@@ -4,6 +4,7 @@ import (
 	"gateway/models"
 	"gateway/pkg/control"
 	"gateway/pkg/view"
+	"os"
 
 	"fyne.io/fyne/v2"
 )
@@ -18,7 +19,11 @@ type main_window struct {
 var list_panel *fyne.Container
 
 func main() {
-	models.FileName = "fff.json"
-	control.DataLoad()
+	models.FileName = ""
+	if len(os.Args) > 1 {
+		models.FileName = os.Args[1]
+		control.DataLoad()
+	}
+	models.TreeItemMap = map[string]*models.TreeItem{}
 	view.MainWindowInit()
 }
