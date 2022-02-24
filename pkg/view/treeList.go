@@ -1,9 +1,9 @@
 package view
 
 import (
-	"fmt"
 	"gateway/models"
 	"gateway/pkg/control"
+	"gateway/tools"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
@@ -43,11 +43,13 @@ func CreateTree() *widget.Tree {
 				models.Area.SetText(dataStruct.Note)
 				models.BottomLabel.SetText(dataStruct.Path)
 			} else {
-				fmt.Println("TREE SELECTED ERROR")
+				tools.Alert("ERROR", "OnSelected: Ошибка выделенной секции")
 			}
 		},
 		OnUnselected: func(uid string) {
-			control.SaveChanges(uid)
+			if _, ok := models.Path_Map[uid]; uid != "" && ok {
+				control.SaveChanges(uid)
+			}
 		},
 	}
 	return tree

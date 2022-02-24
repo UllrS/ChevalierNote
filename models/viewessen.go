@@ -11,6 +11,8 @@ var Area *widget.Entry
 var List_panel *fyne.Container
 var TreeView *widget.Tree
 var BottomLabel *widget.Label
+var Lock bool = false
+var PWD string
 
 var TreeItemMap map[string]*widget.Label
 

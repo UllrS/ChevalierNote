@@ -4,37 +4,48 @@ import (
 	"encoding/json"
 	"fmt"
 	"gateway/models"
-	"os"
+	"gateway/tools"
+	"io/ioutil"
 )
 
 func LoadFile(docname string) {
-	file, err := os.Open(docname)
+	fmt.Printf("load file")
+	f, err := ioutil.ReadFile(docname)
 	if err != nil {
-		fmt.Println(err.Error())
+		tools.Alert("ERROR", err.Error())
 	}
-	defer file.Close()
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&models.Essenx)
+	if len(f) > 0 {
+		f = tools.PwdEntry(f)
+	}
+	models.Essenx = models.Essen{}
+	err = json.Unmarshal(f, &models.Essenx)
 	if err != nil {
-		fmt.Println(err.Error())
+		tools.Alert("ERROR", err.Error())
 	}
-	fmt.Println(models.Essenx)
-	fmt.Println(models.Essenx.GetChildrenListName())
 }
 func SaveFile(docname string) {
-	file, err := os.OpenFile(docname, os.O_CREATE|os.O_WRONLY|os.O_APPEND|os.O_TRUNC, 0640)
-	if err != nil {
-		fmt.Println(err.Error())
+	//Init checkByte aes256
+	var crypto []byte
+	if models.Lock {
+		crypto = append(crypto, 01)
+	} else {
+		crypto = append(crypto, 00)
 	}
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-
-	err = encoder.Encode(&models.Essenx)
+	var jsonData []byte
+	jsonData, err := json.Marshal(models.Essenx)
 	if err != nil {
-		fmt.Println(err.Error())
+		tools.Alert("ERROR", err.Error())
 	}
-	fmt.Println(models.Essenx)
+	//jsonData encode aes256
+	//
+	//Add checkByte
+	jsonData = append(crypto, jsonData...)
+	fmt.Println("jsonData")
+	fmt.Println(jsonData)
+	err = ioutil.WriteFile(docname, jsonData, 0640)
+	if err != nil {
+		tools.Alert("ERROR", err.Error())
+	}
 	models.Essenx.InitPath("")
 
 }

@@ -8,19 +8,32 @@ import (
 	"strings"
 
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/widget"
 )
 
 func ShowBar() {
 	repository.LoadFile(models.FileName)
 }
 func NewItemDialog() {
-	dialog := dialog.NewEntryDialog("New name", "", func(s string) { NewItem(s) }, models.AppWindow)
-	dialog.Show()
+	// win := dialog.NewEntryDialog("New name", "", func(s string) { NewItem(s) }, models.AppWindow)
+	var entr = widget.NewEntry()
+	win := dialog.NewForm("Создать раздел", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("", entr)}, func(b bool) {
+		if b {
+			NewItem(entr.Text)
+		}
+	}, models.AppWindow)
+
+	win.Show()
 }
 func NewItem(name string) {
 	if _, ok := models.Path_Map[models.TargetEssens]; !ok {
-		alert := dialog.NewInformation("Уже существует", "", models.AppWindow)
-		alert.Show()
+		tools.Alert("Не выбран родительский раздел", "")
+		dialog.NewInformation("Уже существует", "", models.AppWindow)
+		return
+	}
+	if _, ok := models.Path_Map[name]; ok {
+		tools.Alert("Раздел уже существует", "")
+		dialog.NewInformation("Уже существует", "", models.AppWindow)
 		return
 	}
 	models.Path_Map[models.TargetEssens].CreateChild(name)
@@ -31,7 +44,12 @@ func NewItem(name string) {
 	models.TreeView.Refresh()
 }
 func RenameItemDialog() {
-	dialog := dialog.NewEntryDialog("New name", "", func(s string) { RenameItem(s) }, models.AppWindow)
+	var entr = widget.NewEntry()
+	dialog := dialog.NewForm("Новое название раздела", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("ENT", entr)}, func(b bool) {
+		if b {
+			RenameItem(entr.Text)
+		}
+	}, models.AppWindow)
 	dialog.Show()
 }
 
@@ -48,7 +66,6 @@ func RenameItem(newName string) {
 func DeleteItemDialog() {
 	dialog := dialog.NewConfirm("Are you sure?", "Delete selected section", func(b bool) {
 		if b {
-			fmt.Println("DELETE!")
 			DeleteItem()
 		}
 	}, models.AppWindow)
@@ -58,25 +75,16 @@ func DeleteItem() {
 	if models.TargetEssens == "" {
 		return
 	}
-	fmt.Println("delete item")
 	var path_str = models.Path_Map[models.TargetEssens].Path
-	fmt.Println(path_str)
 	var arr = strings.Split(path_str, "/")
-	fmt.Println(arr)
 	var itemName = arr[len(arr)-1]
-	fmt.Println(itemName)
 	var parentName = arr[len(arr)-2]
-	arr = arr[:len(arr)-1]
-	fmt.Println(arr)
-	path_str = strings.Join(arr, "/")
-	fmt.Println(path_str)
+	//arr = arr[:len(arr)-1]
+	//path_str = strings.Join(arr, "/")
 
 	models.TreeView.Select(parentName)
 	models.Path_Map[parentName].Children = tools.Remove(models.Path_Map[parentName].Children, models.Path_Map[itemName])
 	models.Init()
-
-	// models.Path_Map = map[string]*models.Essen{}
-	// models.Essenx.InitPath("")
 	models.TreeView.Refresh()
 }
 func WebS() {
@@ -84,6 +92,7 @@ func WebS() {
 }
 func Guard() {
 	fmt.Println("NEW guard")
+	tools.PwdCreate()
 }
 func NewSafe() {
 	fmt.Println("NEW safe")
