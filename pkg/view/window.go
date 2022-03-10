@@ -30,6 +30,10 @@ func MainWindowInit() {
 
 	models.AppWindow.SetContent(main_lay)
 
+	if models.FileName != "" {
+		control.OpenFileFunc(models.FileName, nil)
+	}
+
 	models.AppWindow.ShowAndRun()
 }
 

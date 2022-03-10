@@ -1,13 +1,16 @@
 package control
 
 import (
+	"fmt"
 	"gateway/models"
 	"gateway/tools"
 	"os"
+	"path/filepath"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/storage"
+	"fyne.io/fyne/v2/widget"
 )
 
 func NewFile() {
@@ -20,9 +23,13 @@ func NewFile() {
 
 }
 func CheckARGS() bool {
+	fmt.Println("Check args")
 	if len(os.Args) > 1 {
-		models.FileName = os.Args[1]
-		DataLoad()
+		abs, err := filepath.Abs(os.Args[1])
+		if err != nil {
+			fmt.Println("Error", err.Error())
+		}
+		models.FileName = abs
 		return true
 	}
 	return false
@@ -42,14 +49,28 @@ func OpenFile() {
 	}, models.AppWindow)
 	filePick.SetFilter(storage.NewExtensionFileFilter([]string{".cvl"}))
 	filePick.Show()
+
 }
 func OpenFileFunc(fpath string, err error) {
 	if err != nil {
 		tools.Alert("ERROR", err.Error())
 		return
 	}
-	models.FileName = fpath
-	DataLoad()
+
+	var entr = widget.NewEntry()
+	dialog := dialog.NewForm("Введите пароль", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("ENT", entr)}, func(b bool) {
+		if b {
+			models.PWD = entr.Text
+			models.FileName = fpath
+			DataLoad()
+
+		} else {
+			models.FileName = fpath
+			DataLoad()
+		}
+	}, models.AppWindow)
+	dialog.Show()
+
 }
 func SaveFile() {
 	SaveChanges(models.TargetEssens)
@@ -67,11 +88,12 @@ func SaveFileAs() {
 	dial := dialog.NewFileSave(func(uc fyne.URIWriteCloser, e error) {
 		if uc == nil || e != nil {
 			return
+		} else {
+			models.FileName = uc.URI().Path()
+			DataSave(models.FileName)
 		}
 		defer uc.Close()
 		// uc.URI().Extension()
-		models.FileName = uc.URI().Path()
-		DataSave(models.FileName)
 	}, models.AppWindow)
 	dial.SetFilter(storage.NewExtensionFileFilter([]string{".cvl"}))
 	dial.SetFileName("newfile.cvl")

@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"crypto/sha256"
 	"fmt"
-	"gateway/models"
 )
 
 func AesEncode(data []byte, key []byte) []byte {
@@ -41,8 +40,22 @@ func AesDecode(encryptData []byte, key []byte) []byte {
 	return data
 }
 
-func DataUnlock(data []byte, pwd string) []byte {
+func DataUnlock(data []byte, pwd string) ([]byte, error) {
 	fmt.Println("dataUnlock")
+	var key []byte
+	pwdHash := sha256.New()
+	i, err := pwdHash.Write([]byte(pwd))
+	if err != nil {
+		Alert("ERROR", err.Error())
+		return data, err
+	}
+	fmt.Println(i)
+	key = pwdHash.Sum(nil)
+	result := AesDecode(data, key)
+	return result, nil
+}
+func DataLock(data []byte, pwd string) ([]byte, error) {
+	fmt.Println("dataLock")
 	var key []byte
 	pwdHash := sha256.New()
 	i, err := pwdHash.Write([]byte(pwd))
@@ -51,18 +64,6 @@ func DataUnlock(data []byte, pwd string) []byte {
 	}
 	fmt.Println(i)
 	key = pwdHash.Sum(nil)
-	return AesDecode(data, key)
-}
-func DataLock(data []byte) []byte {
-	fmt.Println("dataLock")
-	var key []byte
-	pwdHash := sha256.New()
-	i, err := pwdHash.Write([]byte(models.PWD))
-	if err != nil {
-		Alert("ERROR", err.Error())
-	}
-	fmt.Println(i)
-	key = pwdHash.Sum(nil)
-	return AesEncode(data, key)
+	return AesEncode(data, key), nil
 
 }

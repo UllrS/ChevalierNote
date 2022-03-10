@@ -1,12 +1,23 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var FileName string
 var Essenx Essen
+var FileStructure FileStruct
 var TargetEssens string
 
 var Path_Map map[string]*Essen
+
+type FileStruct struct {
+	Settings FileSettings
+	Body     []byte
+}
+type FileSettings struct {
+	Lock bool
+}
 
 type Essen struct {
 	Name     string   `json:"name"`

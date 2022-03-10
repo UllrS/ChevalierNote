@@ -20,9 +20,9 @@ var list_panel *fyne.Container
 
 func main() {
 	models.FileName = ""
+	models.Init()
 	if control.CheckARGS() {
 		fmt.Println("OPEN FILE ARGS")
 	}
-	models.Init()
 	view.MainWindowInit()
 }

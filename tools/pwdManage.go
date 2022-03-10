@@ -1,47 +1,51 @@
 package tools
 
 import (
+	"fmt"
 	"gateway/models"
 
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 )
 
-func PwdEntry(data []byte) []byte {
-	if data[0] == 01 {
-		models.Lock = true
-		//f Decode aes256
-		//
-	} else if data[0] == 00 {
-		models.Lock = false
+func EncryptData(data []byte) ([]byte, error) {
+	if !models.FileStructure.Settings.Lock {
+		return data, nil
 	}
-	data = data[1:]
-	if !models.Lock {
-		return data
+	unlockData, err := DataLock(data, models.PWD)
+	return unlockData, err
+}
+func PwdEntry(data []byte) ([]byte, error) {
+	if !models.FileStructure.Settings.Lock {
+		fmt.Println("NO LOCK")
+		return data, nil
 	}
-	var unlockData []byte
-	var entr = widget.NewEntry()
-	dialog := dialog.NewForm("Введите пароль", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("ENT", entr)}, func(b bool) {
-		if b {
-			unlockData = DataUnlock(data, entr.Text)
-			models.PWD = entr.Text
-		}
-	}, models.AppWindow)
-	dialog.Show()
-	return unlockData
+	unlockData, err := DataUnlock(data, models.PWD)
+	return unlockData, err
 }
 func PwdCreate() {
-	if models.Lock {
-		Alert("ERROR", "Файл уже зашифрован")
-		return
+	if models.FileStructure.Settings.Lock {
+		var entr = widget.NewEntry()
+		var entrNew = widget.NewEntry()
+		dialog := dialog.NewForm("Новый пароль", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("Пароль", entr), widget.NewFormItem("New password", entrNew)}, func(b bool) {
+			if b {
+				if models.PWD == entr.Text {
+					models.PWD = entrNew.Text
+					models.FileStructure.Settings.Lock = true
+					Alert("Пароль изменен!", "")
+				}
+			}
+		}, models.AppWindow)
+		dialog.Show()
+	} else {
+		var entr = widget.NewEntry()
+		dialog := dialog.NewForm("Новый пароль", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("Password", entr)}, func(b bool) {
+			if b {
+				models.PWD = entr.Text
+				models.FileStructure.Settings.Lock = true
+				Alert("Пароль установлен!", "")
+			}
+		}, models.AppWindow)
+		dialog.Show()
 	}
-	var entr = widget.NewEntry()
-	dialog := dialog.NewForm("Новый пароль пароль", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("ENT", entr)}, func(b bool) {
-		if b {
-			models.PWD = entr.Text
-			models.Lock = true
-			Alert("Пароль установлен!", "")
-		}
-	}, models.AppWindow)
-	dialog.Show()
 }

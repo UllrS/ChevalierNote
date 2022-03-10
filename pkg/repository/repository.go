@@ -8,41 +8,47 @@ import (
 	"io/ioutil"
 )
 
-func LoadFile(docname string) {
+func LoadFile(docname string) error {
 	fmt.Printf("load file")
 	f, err := ioutil.ReadFile(docname)
 	if err != nil {
 		tools.Alert("ERROR", err.Error())
 	}
-	if len(f) > 0 {
-		f = tools.PwdEntry(f)
+	models.FileStructure = models.FileStruct{}
+
+	if err := json.Unmarshal(f, &models.FileStructure); err != nil {
+		tools.Alert("ERROR json file structure", err.Error())
+		return err
 	}
-	models.Essenx = models.Essen{}
-	err = json.Unmarshal(f, &models.Essenx)
+
+	unlock_body, err := tools.PwdEntry(models.FileStructure.Body)
 	if err != nil {
-		tools.Alert("ERROR", err.Error())
+		tools.Alert("ERROR password", err.Error())
+		return err
 	}
+	if err := json.Unmarshal(unlock_body, &models.Essenx); err != nil {
+		tools.Alert("ERROR json2", err.Error())
+		return err
+	}
+	return nil
 }
 func SaveFile(docname string) {
 	//Init checkByte aes256
-	var crypto []byte
-	if models.Lock {
-		crypto = append(crypto, 01)
-	} else {
-		crypto = append(crypto, 00)
-	}
 	var jsonData []byte
 	jsonData, err := json.Marshal(models.Essenx)
 	if err != nil {
 		tools.Alert("ERROR", err.Error())
 	}
-	//jsonData encode aes256
-	//
-	//Add checkByte
-	jsonData = append(crypto, jsonData...)
-	fmt.Println("jsonData")
-	fmt.Println(jsonData)
-	err = ioutil.WriteFile(docname, jsonData, 0640)
+	// lock data
+	jsonData, _ = tools.EncryptData(jsonData)
+
+	// models.FileStructure = models.FileStruct{Body: jsonData}
+	models.FileStructure.Body = jsonData
+	fileData, err := json.Marshal(models.FileStructure)
+	if err != nil {
+		tools.Alert("ERROR", err.Error())
+	}
+	err = ioutil.WriteFile(docname, fileData, 0640)
 	if err != nil {
 		tools.Alert("ERROR", err.Error())
 	}

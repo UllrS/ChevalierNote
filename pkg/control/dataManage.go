@@ -18,12 +18,18 @@ func DataSaveAs() {
 	if models.FileName == "" {
 		dial := dialog.NewFileSave(func(uc fyne.URIWriteCloser, e error) { repository.SaveFile(uc.URI().Fragment()) }, models.AppWindow)
 		dial.Show()
+		repository.SaveFile(models.FileName)
 	}
-	repository.SaveFile(models.FileName)
 }
 func DataLoad() {
+
 	models.Essenx = models.Essen{}
-	repository.LoadFile(models.FileName)
+	err := repository.LoadFile(models.FileName)
+	if err != nil {
+		tools.Alert("ERROR LOAD", err.Error())
+		NewData()
+		return
+	}
 	models.Init()
 	if models.TreeView != nil {
 		models.TreeView.Refresh()
@@ -32,6 +38,7 @@ func DataLoad() {
 func NewData() {
 	models.FileName = ""
 	models.Area.SetText("")
+	models.FileStructure = models.FileStruct{Settings: models.FileSettings{Lock: false}}
 	models.Essenx = models.Essen{}
 	models.Init()
 	if models.TreeView != nil {
