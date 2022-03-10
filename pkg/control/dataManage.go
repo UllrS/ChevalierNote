@@ -12,18 +12,21 @@ import (
 
 func DataSave(path string) {
 	repository.SaveFile(path)
+	models.AppWindow.SetTitle(path)
 }
 func DataSaveAs() {
 	models.Path_Map[models.TargetEssens].Note = models.Area.Text
 	if models.FileName == "" {
 		dial := dialog.NewFileSave(func(uc fyne.URIWriteCloser, e error) { repository.SaveFile(uc.URI().Fragment()) }, models.AppWindow)
 		dial.Show()
+		models.AppWindow.SetTitle(models.FileName)
 		repository.SaveFile(models.FileName)
 	}
 }
 func DataLoad() {
 
 	models.Essenx = models.Essen{}
+	models.AppWindow.SetTitle(models.FileName)
 	err := repository.LoadFile(models.FileName)
 	if err != nil {
 		tools.Alert("ERROR LOAD", err.Error())
@@ -37,6 +40,7 @@ func DataLoad() {
 }
 func NewData() {
 	models.FileName = ""
+	models.AppWindow.SetTitle("New note")
 	models.Area.SetText("")
 	models.FileStructure = models.FileStruct{Settings: models.FileSettings{Lock: false}}
 	models.Essenx = models.Essen{}

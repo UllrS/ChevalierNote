@@ -13,21 +13,18 @@ func ControlPanelCreate() *widget.Toolbar {
 	// init resources
 	img_save, _ := fyne.LoadResourceFromPath("assets/image/save.png")
 	img_saveAs, _ := fyne.LoadResourceFromPath("assets/image/saveas.png")
-	img_shield, _ := fyne.LoadResourceFromPath("assets/image/shield.png")
-	img_safe, _ := fyne.LoadResourceFromPath("assets/image/safe.png")
+	img_shield, _ := fyne.LoadResourceFromPath("assets/image/lock.png")
 	img_earth, _ := fyne.LoadResourceFromPath("assets/image/earth1.png")
 	img_openfolder, _ := fyne.LoadResourceFromPath("assets/image/open_folder.png")
 	img_newItem, _ := fyne.LoadResourceFromPath("assets/image/docplus.png")
-	img_control, _ := fyne.LoadResourceFromPath("assets/image/control.png")
 	//init toolbar button
 	item_newItem := widget.NewToolbarAction(img_newItem, control.NewFile)
 	item_openfolder := widget.NewToolbarAction(img_openfolder, control.OpenFile)
 	item_save := widget.NewToolbarAction(img_save, control.SaveFile)
 	item_saveAs := widget.NewToolbarAction(img_saveAs, control.SaveFileAs)
 	item_web := widget.NewToolbarAction(img_earth, control.WebS)
-	item_safe := widget.NewToolbarAction(img_safe, control.NewSafe)
 	item_guard := widget.NewToolbarAction(img_shield, control.Guard)
-	item_show_bar := widget.NewToolbarAction(img_control, control.ShowBar)
+
 	control_panel.Append(item_newItem)
 	control_panel.Append(item_openfolder)
 	control_panel.Append(item_save)
@@ -35,8 +32,6 @@ func ControlPanelCreate() *widget.Toolbar {
 	control_panel.Append(widget.NewToolbarSpacer())
 	control_panel.Append(item_web)
 	control_panel.Append(widget.NewToolbarSpacer())
-	control_panel.Append(item_safe)
 	control_panel.Append(item_guard)
-	control_panel.Append(item_show_bar)
 	return control_panel
 }

@@ -27,8 +27,15 @@ func PwdCreate() {
 	if models.FileStructure.Settings.Lock {
 		var entr = widget.NewEntry()
 		var entrNew = widget.NewEntry()
-		dialog := dialog.NewForm("Новый пароль", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("Пароль", entr), widget.NewFormItem("New password", entrNew)}, func(b bool) {
+		var entrNew1 = widget.NewEntry()
+		dialog := dialog.NewForm("Изменить пароль", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("pwd", entr), widget.NewFormItem("New", entrNew), widget.NewFormItem("New", entrNew1)}, func(b bool) {
 			if b {
+				if entr.Text != models.PWD {
+					Alert("Неверный пароль", "")
+				}
+				if entrNew.Text != entrNew1.Text {
+					Alert("Пароли не совпадают", "")
+				}
 				if models.PWD == entr.Text {
 					models.PWD = entrNew.Text
 					models.FileStructure.Settings.Lock = true
@@ -39,7 +46,8 @@ func PwdCreate() {
 		dialog.Show()
 	} else {
 		var entr = widget.NewEntry()
-		dialog := dialog.NewForm("Новый пароль", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("Password", entr)}, func(b bool) {
+		var entr1 = widget.NewEntry()
+		dialog := dialog.NewForm("Зашифровать данные", "Ок", "Отмена", []*widget.FormItem{widget.NewFormItem("New", entr), widget.NewFormItem("", entr1)}, func(b bool) {
 			if b {
 				models.PWD = entr.Text
 				models.FileStructure.Settings.Lock = true

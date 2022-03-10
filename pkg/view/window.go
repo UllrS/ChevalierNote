@@ -12,10 +12,9 @@ import (
 
 func MainWindowInit() {
 
-	icon, _ := fyne.LoadResourceFromPath("assets/image/knight.png")
+	icon, _ := fyne.LoadResourceFromPath("assets/image/chevalier.png")
 	a := app.New()
-	models.AppWindow = a.NewWindow("Note")
-	// models.AppWin = models.AppWindow{&a}
+	models.AppWindow = a.NewWindow("New note")
 	models.AppWindow.SetIcon(icon)
 	models.AppWindow.Resize(fyne.NewSize(680, 420))
 

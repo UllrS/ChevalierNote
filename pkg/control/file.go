@@ -29,6 +29,15 @@ func CheckARGS() bool {
 		if err != nil {
 			fmt.Println("Error", err.Error())
 		}
+		_, err = os.Stat(abs)
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Println("Error", "Файл не найден")
+			} else {
+				fmt.Println("Error", err.Error())
+			}
+			return false
+		}
 		models.FileName = abs
 		return true
 	}
@@ -66,7 +75,7 @@ func OpenFileFunc(fpath string, err error) {
 
 		} else {
 			models.FileName = fpath
-			DataLoad()
+			NewData()
 		}
 	}, models.AppWindow)
 	dialog.Show()
